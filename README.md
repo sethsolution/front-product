@@ -18,7 +18,8 @@ Antes de comenzar, asegúrate de tener instalado:
 
 - Node.js (versión 18.x o superior)
 - npm, yarn, o pnpm
-- Conexión al backend de FastAPI
+> [!IMPORTANT]
+> Conexión al backend de FastAPI 
 
 ## 📦 Instalación
 
@@ -27,7 +28,7 @@ Antes de comenzar, asegúrate de tener instalado:
 Inicia clonando el proyecto en tu carpeta de desarrollo:
 
 ```bash
-$ git clone git@github.com:tu-usuario/product-task-frontend.git
+$ git clone https://github.com/sethsolution/front-product
 ```
 
 ### Acceder al proyecto
@@ -35,7 +36,7 @@ $ git clone git@github.com:tu-usuario/product-task-frontend.git
 Navega al directorio del proyecto:
 
 ```bash
-$ cd product-task-frontend
+$ cd front-product
 ```
 
 ### Abrir en Visual Studio Code
@@ -89,7 +90,3 @@ Asegúrate de tener el backend en ejecución en `http://localhost:8000`.
 - [Next.js Documentation](https://nextjs.org/docs)
 - [React Documentation](https://reactjs.org/docs)
 - [Tailwind CSS](https://tailwindcss.com/docs)
-
-## 📄 Licencia
-
-Distribuido bajo la Licencia MIT. Consulta `LICENSE` para más información.
