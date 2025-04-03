@@ -4,10 +4,10 @@ import { CheckSquare, Package, Users, ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (
-    <main className="container mx-auto py-10 px-4">
-      <h1 className="text-4xl font-bold mb-8 text-center">Home</h1>
+    <main className="container mx-auto py-5 px-2">
+      {/* <h1 className="text-4xl font-bold mb-8 text-center">Home</h1> */}
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-10 bg-gradient-to-b from-background to-muted/30">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
+        <div className="max-w-4xl mx-auto text-center space-y-5">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
             Sistema de Gestión Empresarial
           </h1>
