@@ -48,65 +48,11 @@ export function CustomerManager() {
     fetchCustomers();
   }, [router]);
 
-  const handleCreateCustomer = async (newCustomer) => {
-    const accessToken = localStorage.getItem("accessToken");
-  
-    try {
-      console.log("Sending customer data:", newCustomer);
-      console.log("Access Token:", accessToken);
-  
-      const response = await fetch("http://localhost:8000/customers/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(newCustomer),
-      });
-  
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error response text:", errorText);
-        throw new Error(`Failed to create customer. Status: ${response.status}, Error: ${errorText}`);
-      }
-  
-      const customer = await response.json();
-  
-      setCustomers([...customers, customer]);
-      setIsFormOpen(false);
-    } catch (error) {
-      console.error("Detailed error creating customer:", error);
-      alert(`Error creating customer: ${error.message}`);
-    }
-  };
-
-  const handleUpdateCustomer = async(updatedCustomer) => {
-    await fetch(
-      `http://localhost:8000/customers/${updatedCustomer.id}`,
-      
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedCustomer),
-      }
-    );
-    setCustomers(
-      customers.map((customer) =>
-        customer.id === updatedCustomer.id ?
-       {...updatedCustomer, updated_at: new Date().toISOString()} : customer
-      )
-    );
-    setIsFormOpen(false);
-    setIsEditing(false);
-  };
-
-  const handleDeleteCustomer = async() => {
+  const handleDeleteCustomer = async () => {
     if (currentCustomer) {
       await fetch(
         `http://localhost:8000/customers/${currentCustomer.id}`,
-        
+
         {
           method: "DELETE",
           headers: {
@@ -162,9 +108,11 @@ export function CustomerManager() {
       <CustomerForm
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
-        onSubmit={isEditing ? handleUpdateCustomer : handleCreateCustomer}
         customer={isEditing ? currentCustomer : null}
         isEditing={isEditing}
+        setIsEditing={setIsEditing}
+        setCustomers={setCustomers}
+        customers={customers}
       />
       <CustomerDetails
         isOpen={isDetailsOpen}
