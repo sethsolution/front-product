@@ -77,8 +77,22 @@ export function TaskManager({ allTasks }) {
     }
   };
 
-  const openTaskDetails = (task) => {
-    setCurrentTask(task);
+  const openTaskDetails = async(task) => {
+    if (task) {
+      const response = await fetch(
+        `http://localhost:8000/tasks/${task.id}/`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      setCurrentTask(data);
+    }
+    // setCurrentTask(task);
     setIsDetailsOpen(true);
   };
 

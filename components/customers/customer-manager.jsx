@@ -68,8 +68,22 @@ export function CustomerManager() {
     }
   };
 
-  const openCustomerDetails = (customer) => {
-    setCurrentCustomer(customer);
+  const openCustomerDetails = async(customer) => {
+    if (customer){
+      const response = await fetch(
+        `http://localhost:8000/customers/${customer.id}/`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      setCurrentCustomer(data);
+    }
+    // setCurrentCustomer(customer);
     setIsDetailsOpen(true);
   };
 

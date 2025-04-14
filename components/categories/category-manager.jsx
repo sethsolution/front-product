@@ -79,8 +79,25 @@ export function CategoryManager({ allCategories }) {
     }
   };
 
-  const openCategoryDetails = (category) => {
-    setCurrentCategory(category);
+  const openCategoryDetails = async(category) => {
+    if (category) {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/catalog/products_category/${category.id}`,
+          {
+            method: "GET",
+            headers: {
+              "accept": "aplication/json",
+            },
+          }
+        );
+        const data = await response.json();
+        setCurrentCategory(data);
+      } catch (error) {
+        console.error("Error fetching category details:", error);
+        setCurrentCategory(category);
+      }
+    }
     setIsDetailsOpen(true);
   };
 

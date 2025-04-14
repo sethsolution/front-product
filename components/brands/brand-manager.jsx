@@ -77,9 +77,27 @@ export const BrandManager = ({ allBrands }) => {
     }
   };
 
-  const openBrandDetails = (brand) => {
-    setCurrentBrand(brand);
-    setIsDetailsOpen(true);
+  const openBrandDetails = async (brand) => {
+    if (brand) {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/catalog/product_brand/${brand.id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        
+        const brandDetails = await response.json();
+        setCurrentBrand(brandDetails); 
+      } catch (error) {
+        console.error("Error fetching brand details:", error);
+        setCurrentBrand(brand); 
+      }
+      setIsDetailsOpen(true);
+    }
   };
 
   const openEditForm = (brand) => {
