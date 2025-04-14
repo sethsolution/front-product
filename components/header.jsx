@@ -28,7 +28,8 @@ export function Header() {
 
     const fetchUserData = async () => {
       if (!isLoggedIn) {
-        router.push("/login");
+        setAuthState({isAuthenticated: false, user: null});
+        // router.push("/login");
         return;
       }
 
@@ -40,6 +41,7 @@ export function Header() {
             Authorization: `Bearer ${isLoggedIn}`,
           },
         });
+        
 
         const data = await response.json();
 
@@ -53,7 +55,10 @@ export function Header() {
         });
       } catch (error) {
         console.error("Error fetching user data:", error);
-        router.push("/login");
+        localStorage.removeItem("accessToken");
+        setAuthState({isAuthenticated: false, user: null});
+        // router.push("/login");
+
       }
     };
 
@@ -81,12 +86,12 @@ export function Header() {
     console.log(data.msg);
     localStorage.clear();
 
-    setIsAuthenticated(false);
-
+    // setIsAuthenticated(false);
+    setAuthState({isAuthenticated: false, user: null});
     // Redirigir a la página de inicio
     router.push("/");
   };
-
+  
   const getInitials = (firstName, lastName) => {
     const first = firstName || "";
     const last = lastName || "";
@@ -138,6 +143,7 @@ export function Header() {
                   </div>
                 </div>
                 <DropdownMenuSeparator />
+
                 <DropdownMenuItem asChild>
                   <Link href="/profile" className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
@@ -152,6 +158,7 @@ export function Header() {
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Cerrar Sesión</span>
                 </DropdownMenuItem>
+                
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
