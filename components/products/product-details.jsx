@@ -33,10 +33,12 @@ export function ProductDetails({ isOpen, onClose, product }) {
             <div className="h-40 w-40 rounded-md bg-muted flex items-center justify-center overflow-hidden">
               {product.image ? (
                 <Image
-                  src={product.image || "/placeholder.svg"}
-                  alt={product.title}
-                  className="h-full w-full object-cover"
-                />
+                src={product.image || "/placeholder.svg"}
+                alt={product.title}
+                width={40}  // Add this property
+                height={40} // Add this property too, for proper aspect ratio
+                className="h-full w-full object-cover"
+              />
               ) : (
                 <Package className="h-10 w-10 text-muted-foreground" />
               )}
