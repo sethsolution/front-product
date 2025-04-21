@@ -7,6 +7,8 @@ import { BrandTable } from "./brand-table";
 import { BrandForm } from "./brand-form";
 import { BrandDetails } from "./brand-details";
 import { DeleteConfirmation } from "../ui/delete-confirmation";
+import { api } from "@/lib/axios";
+import { toast } from "react-hot-toast";
 
 export const BrandManager = ({ allBrands }) => {
   const [brands, setBrands] = useState(allBrands);
@@ -17,86 +19,63 @@ export const BrandManager = ({ allBrands }) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleCreateBrand = async (newBrand) => {
-    const brand = {
-      ...newBrand,
-      id: Math.max(0, ...brands.map((b) => b.id)) + 1,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    const brandToCreate = {
-      name: brand.name,
-      description: brand.description,
-    };
-    await fetch(`http://localhost:8000/catalog/product_brand/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(brandToCreate),
-    });
-    setBrands([...brands, brand]);
-    setIsFormOpen(false);
+
+    try{
+      const {data : createdBrand} = await api.post(`/catalog/product_brand/`, newBrand);
+      toast.success("Marca creada con éxito!");
+      setBrands((prev)=> [...prev, createdBrand]);
+      setIsFormOpen(false);
+    }catch(error){
+      console.error("Error creando la marca:",error);
+      toast.error("Algo salió mal :(");
+    }
   };
 
   const handleUpdateBrand = async (updatedBrand) => {
-    await fetch(
-      `http://localhost:8000/catalog/product_brand/${updatedBrand.id}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedBrand),
-      }
-    );
-    setBrands(
-      brands.map((brand) =>
-        brand.id === updatedBrand.id
-          ? { ...updatedBrand, updated_at: new Date().toISOString() }
-          : brand
-      )
-    );
-    setIsFormOpen(false);
-    setIsEditing(false);
+    
+    try{
+      const {data : updated} = await api.patch(`/catalog/product_brand/${updatedBrand.id}/`,updatedBrand);
+      toast.success("Marca actualizada con éxito!");
+      
+      setBrands((prev) =>
+        prev.map((brand)=>
+        brand.id === updatedBrand.id ? updated : brand)
+      );
+      setIsFormOpen(false);
+      setIsEditing(false);
+    }catch(error){
+      console.error("Error actualizando la marca:",error);
+      toast.error("Algo salió mal :(");
+    }
   };
 
   const handleDeleteBrand = async () => {
     if (currentBrand) {
-      await fetch(
-        `http://localhost:8000/catalog/product_brand/${currentBrand.id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+      try{
+        await api.delete(`/catalog/product_brand/${currentBrand.id}/`);
+        toast.success("Marca eliminada con éxito!");
+  
+        setBrands((prev)=>
+          prev.filter((brand) => brand.id !== currentBrand.id)
       );
-      setBrands(brands.filter((brand) => brand.id !== currentBrand.id));
-      setIsDeleteOpen(false);
-      setCurrentBrand(null);
+        setIsDeleteOpen(false);
+        setCurrentBrand(null);
+
+      }catch(error){
+      console.error("Error actualizando la marca:",error);
+      toast.error("Algo salió mal :(");
+      }
     }
   };
 
   const openBrandDetails = async (brand) => {
-    if (brand) {
-      try {
-        const response = await fetch(
-          `http://localhost:8000/catalog/product_brand/${brand.id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        
-        const brandDetails = await response.json();
-        setCurrentBrand(brandDetails); 
-      } catch (error) {
-        console.error("Error fetching brand details:", error);
-        setCurrentBrand(brand); 
-      }
+    try{
+      const {data} = await api.get(`/catalog/product_brand/${brand.id}/`);
+      setCurrentBrand(data);
       setIsDetailsOpen(true);
+    }catch{
+      console.error("Error obteniendo la Marca:",error);
+      toast.error("No se pudo cargar la Marca.");
     }
   };
 
