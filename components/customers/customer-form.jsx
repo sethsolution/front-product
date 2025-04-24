@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {api} from "@/lib/axios";
+import toast from "react-hot-toast";
 
 export function CustomerForm({
   isOpen,
@@ -22,7 +24,6 @@ export function CustomerForm({
   setCustomers,
   customers,
 }) {
-  // Configuramos React Hook Form con validaciones
   const {
     register,
     handleSubmit,
@@ -51,7 +52,6 @@ export function CustomerForm({
         setValue("email", customer.email);
         setValue("age", customer.age);
       } else {
-        // Reset to defaults for new customer
         reset({
           name: "",
           last_name: "",
@@ -63,7 +63,6 @@ export function CustomerForm({
     }
   }, [customer, isEditing, isOpen, reset, setValue]);
 
-  // Form submission handler
   const onFormSubmit = async (data) => {
     try {
       if (isEditing && customer) {
@@ -78,87 +77,70 @@ export function CustomerForm({
         });
       }
     } catch (error) {
-      // No need to close the form on error - handled in the specific functions
       console.error("Form submission error:", error);
     }
   };
 
   const handleCreateCustomer = async (newCustomer) => {
     const accessToken = localStorage.getItem("accessToken");
-
+  
     try {
-      const response = await fetch("http://localhost:8000/customers/", {
-        method: "POST",
+      const { data : createdCustomer } = await api.post(`/customers/`, newCustomer, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-        body: JSON.stringify(newCustomer),
       });
-
-      const data = await response.json();
-
-      if (data.detail) {
-        // Handle field-specific errors
-        if (data.detail[0].loc[1] === "email") {
+      toast.success("Cliente creado con éxito");
+  
+      setCustomers((prev)=>[...prev, createdCustomer]);
+      onClose();
+  
+    } catch (error) {
+      
+      // Manejar errores 422 del backend
+      if (error.response?.status === 422) {
+        const data = error.response.data;
+        if (data.detail?.[0]?.loc[1] === "email") {
           setError("email", {
             type: "server",
             message: "Este correo ya está en uso.",
           });
+          return; // Evitar establecer serverError si ya manejamos el error de email
         }
-      } else {
-        setCustomers([...customers, data]);
-        onClose();
       }
-    } catch (error) {
-      console.error("Detailed error creating customer:", error);
+  
       if (!errors.email && !serverError) {
         setServerError(error.message || "Error al crear el cliente");
+        toast.error("Error al crear el cliente");
       }
-      throw error;
     }
   };
 
   const handleUpdateCustomer = async (updatedCustomer) => {
     try {
-      const response = await fetch(
-        `http://localhost:8000/customers/${updatedCustomer.id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-          body: JSON.stringify(updatedCustomer),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response
-          .json()
-          .catch(() => ({ detail: "Error al actualizar el cliente" }));
-
-        // Handle field-specific errors
-        if (errorData.email) {
-          setError("email", { type: "server", message: errorData.email[0] });
-        }
-
-        throw new Error(
-          errorData.detail || `Error al actualizar cliente (${response.status})`
-        );
-      }
-
-      const updatedData = await response.json();
-      setCustomers(
-        customers.map((c) => (c.id === updatedData.id ? updatedData : c))
+      const {data : updatedData} = await api.patch(`/customers/${updatedCustomer.id}`,updatedCustomer)
+        toast.success("Cliente actualizado con exito");
+        setCustomers((prev)=>
+        prev.map((c) => (c.id === updatedData.id ? updatedData : c))
       );
       setIsEditing(false);
+      onClose();
       return updatedData;
     } catch (error) {
       console.error("Error updating customer:", error);
-      if (!errors.email && !serverError) {
-        setServerError(error.message || "Error al actualizar el cliente");
+      if (error.response?.data) {
+        const errors = error.response.data;
+        Object.entries(errors).forEach(([field, messages]) => {
+          setError(field, {
+            type: "server",
+            message: Array.isArray(messages) ? messages[0] : messages,
+          });
+        });
+      } else {
+        setServerError("Error al actualizar el cliente");
+        toast.error("Error al actualizar el cliente");
       }
+  
       throw error;
     }
   };

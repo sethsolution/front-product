@@ -8,6 +8,8 @@ import { CustomerTable } from "./customer-table";
 import { CustomerForm } from "./customer-form";
 import { CustomerDetails } from "./customer-dateils";
 import { DeleteConfirmation } from "../ui/delete-confirmation";
+import { api } from "@/lib/axios";
+import toast from "react-hot-toast";
 
 export function CustomerManager() {
   const [customers, setCustomers] = useState([]);
@@ -27,20 +29,17 @@ export function CustomerManager() {
         return;
       }
 
-      try {
-        const response = await fetch("http://localhost:8000/customers/", {
-          method: "GET",
+      try { 
+        const {data} = await api.get(`/customers/`,{
           headers: {
-            Accept: "application/json",
             Authorization: `Bearer ${accessToken}`,
-          },
-        });
-
-        const data = await response.json();
+          }
+        })
 
         setCustomers(data);
       } catch (error) {
         console.error("Error fetching user data:", error);
+        toast.error("No se pudo cargar la información de clientes")
         router.push("/login");
       }
     };
@@ -50,41 +49,32 @@ export function CustomerManager() {
 
   const handleDeleteCustomer = async () => {
     if (currentCustomer) {
-      await fetch(
-        `http://localhost:8000/customers/${currentCustomer.id}`,
-
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setCustomers(
-        customers.filter((customer) => customer.id !== currentCustomer.id)
-      );
-      setIsDeleteOpen(false);
-      setCurrentCustomer(null);
-    }
+      try{
+        await api.delete(`/customers/${currentCustomer.id}/`);
+        toast.success("Clietne eliminado con éxito");
+        setCustomers((prev)=>
+          prev.filter((customer) => customer.id !== currentCustomer.id)
+        );
+        setIsDeleteOpen(false);
+        setCurrentCustomer(null);
+      }catch(error){
+        console.error("Error eliminando el cliente:", error);
+        toast.error("Error elimando el cliente");
+      }
+      }
   };
 
   const openCustomerDetails = async(customer) => {
     if (customer){
-      const response = await fetch(
-        `http://localhost:8000/customers/${customer.id}/`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      setCurrentCustomer(data);
+      try{
+        const {data} = await api.get(`/customers/${customer.id}/`);
+        setCurrentCustomer(data);
+        setIsDetailsOpen(true);
+      }catch(error){
+        console.error("Error mostrando detalles del cliente", error);
+        toast.error("No se pudo cargar la información del cliente.");
+      }
     }
-    // setCurrentCustomer(customer);
-    setIsDetailsOpen(true);
   };
 
   const openEditForm = (customer) => {
