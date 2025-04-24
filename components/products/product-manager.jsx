@@ -6,6 +6,8 @@ import { ProductTable } from "./product-table";
 import { ProductForm } from "./product-form";
 import { ProductDetails } from "./product-details";
 import { DeleteConfirmation } from "@/components/ui/delete-confirmation";
+import { api } from "@/lib/axios";
+import toast from "react-hot-toast";
 
 export function ProductManager() {
   const [products, setProducts] = useState([]);
@@ -50,42 +52,34 @@ export function ProductManager() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const categoriesResponse = await fetch(
-          "http://localhost:8000/catalog/products_category/"
-        );
-        if (!categoriesResponse.ok)
-          throw new Error("Error al cargar categorías");
-        const categoriesData = await categoriesResponse.json();
-
-        const categoriesMap = new Map();
+      const [categoriesResponse, brandsResponse, productsResponse] = await Promise.all([
+        api.get("catalog/products_category/"),
+        api.get("catalog/product_brand/"),
+        api.get("products/"),
+        
+      ]);
+      const categoriesData = await categoriesResponse.data;
+      const brandsData = await brandsResponse.data;
+      const productsData = await productsResponse.data;
+      const categoriesMap = new Map();
         categoriesData.forEach((category) =>
           categoriesMap.set(category.id, category)
         );
-
-        const brandsResponse = await fetch(
-          "http://localhost:8000/catalog/product_brand/"
+      const brandsMap = new Map();
+        brandsData.forEach((brand) => 
+          brandsMap.set(brand.id, brand)
         );
-        if (!brandsResponse.ok) throw new Error("Error al cargar marcas");
-        const brandsData = await brandsResponse.json();
-
-        const brandsMap = new Map();
-        brandsData.forEach((brand) => brandsMap.set(brand.id, brand));
-
-        const productsResponse = await fetch("http://localhost:8000/products/");
-        if (!productsResponse.ok) throw new Error("Error al cargar productos");
-        const productsData = await productsResponse.json();
-
-        const normalizedProducts = productsData.map((product) =>
+      const normalizedProducts = productsData.map((product) =>
           normalizeProduct(product, categoriesMap, brandsMap)
         );
-
-        setProducts(normalizedProducts);
-        setCategories(categoriesData);
-        setBrands(brandsData);
-        setError(null);
+      
+      setProducts(normalizedProducts);
+      setCategories(categoriesData);
+      setBrands(brandsData);
+      setError(null);
       } catch (err) {
         console.error("Error fetching data:", err);
-        setError(err.message);
+        setError("Error al cargar los datos");
       } finally {
         setLoading(false);
       }
@@ -103,32 +97,24 @@ export function ProductManager() {
         category_id: parseInt(newProduct.categoryId),
         brand_id: parseInt(newProduct.brandId),
       };
-
-      const response = await fetch("http://localhost:8000/products/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(productToCreate),
-      });
-
-      if (!response.ok) throw new Error("Error al crear el producto");
-
-      const createdProduct = await response.json();
+      const {data : createdProduct} = await api.post("products/", productToCreate);
+      toast.success("Producto creado con éxito!");
 
       const category = categories.find(
-        (c) => c.id === parseInt(newProduct.categoryId)
+        (c) => c.id === productToCreate.category_id
       );
-      const brand = brands.find((b) => b.id === parseInt(newProduct.brandId));
+      const brand = brands.find(
+        (b) => b.id === productToCreate.brand_id
+      );
 
       const completeProduct = {
         ...createdProduct,
         category: category || {
-          id: parseInt(newProduct.categoryId),
+          id: productToCreate.category_id,
           name: "Desconocida",
         },
         brand: brand || {
-          id: parseInt(newProduct.brandId),
+          id: productToCreate.brand_id,
           name: "Desconocida",
         },
       };
@@ -137,7 +123,7 @@ export function ProductManager() {
       setIsFormOpen(false);
     } catch (err) {
       console.error("Error creating product:", err);
-      alert("Error al crear el producto: " + err.message);
+      toast.error("Error al crear el producto: ");
     }
   };
 
@@ -152,24 +138,18 @@ export function ProductManager() {
         brand_id: parseInt(updatedProduct.brandId),
       };
 
-      const response = await fetch(
-        `http://localhost:8000/products/${currentProduct.id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(productToUpdate),
-        }
+      
+      const {data : updatedData} = await api.patch(
+        `products/${currentProduct.id}`,
+        productToUpdate
       );
-
-      if (!response.ok) throw new Error("Error al actualizar el producto");
+      toast.success("Producto actializado con exito!!");
 
       const category = categories.find(
-        (c) => c.id === parseInt(updatedProduct.categoryId)
+        (c) => c.id === productToUpdate.category_id
       );
       const brand = brands.find(
-        (b) => b.id === parseInt(updatedProduct.brandId)
+        (b) => b.id === productToUpdate.brand_id
       );
 
       setProducts((prev) =>
@@ -177,17 +157,18 @@ export function ProductManager() {
           if (product.id === currentProduct.id) {
             return {
               ...product,
-              ...productToUpdate,
+              ...updatedData,
               category: category || {
-                id: parseInt(updatedProduct.categoryId),
+                id: productToUpdate.category_id,
                 name: "Desconocida",
               },
               brand: brand || {
-                id: parseInt(updatedProduct.brandId),
+                id: productToUpdate.brand_id,
                 name: "Desconocida",
               },
             };
           }
+
           return product;
         })
       );
@@ -196,41 +177,50 @@ export function ProductManager() {
       setIsEditing(false);
     } catch (err) {
       console.error("Error updating product:", err);
-      alert("Error al actualizar el producto: " + err.message);
+      toast.error("Error al actualizar el producto: ");
     }
   };
 
   const handleDeleteProduct = async () => {
-    if (currentProduct) {
-      try {
-        const response = await fetch(
-          `http://localhost:8000/products/${currentProduct.id}`,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) throw new Error("Error al eliminar el producto");
-
-        setProducts(
-          products.filter((product) => product.id !== currentProduct.id)
-        );
-        setIsDeleteOpen(false);
-        setCurrentProduct(null);
-      } catch (err) {
-        console.error("Error deleting product:", err);
-        alert("Error al eliminar el producto: " + err.message);
-      }
+    if (!currentProduct) return;
+    try {
+      await api.delete(`products/${currentProduct.id}`);
+      toast.success("Producto eliminado con éxito!");
+      
+      setProducts((prev)=>
+        prev.filter((product) => product.id !== currentProduct.id)
+      );
+      setIsDeleteOpen(false);
+      setCurrentProduct(null);
+    } catch (err) {
+      console.error("Error deleting product:", err);
+      toast.error("Error al eliminar el producto: ");
     }
   };
 
-  const openProductDetails = (product) => {
-    setCurrentProduct(product);
-    setIsDetailsOpen(true);
+  const openProductDetails = async (product) => {
+    try {
+      const { data } = await api.get(`/products/${product.id}`);
+      
+      const completeProduct = {
+        ...data,
+        category: data.category || {
+          id: data.category_id,
+          name: "Desconocida",
+        },
+        brand: data.brand || {
+          id: data.brand_id,
+          name: "Desconocida",
+        },
+      };
+      setCurrentProduct(completeProduct);
+      setIsDetailsOpen(true);
+    } catch (err) {
+      console.error("Error al cargar detalles del producto:", err);
+      toast.error("No se pudo cargar el producto.");
+    }
   };
+  
 
   const openEditForm = (product) => {
     setCurrentProduct(product);

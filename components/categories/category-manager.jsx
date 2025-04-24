@@ -7,6 +7,8 @@ import { CategoryTable } from "./category-table";
 import { CategoryForm } from "./category-form";
 import { CategoryDetails } from "./category-details";
 import { DeleteConfirmation } from "../ui/delete-confirmation";
+import { api } from "@/lib/axios";
+import toast from "react-hot-toast";
 
 export function CategoryManager({ allCategories }) {
   const [categories, setCategories] = useState(allCategories);
@@ -17,71 +19,65 @@ export function CategoryManager({ allCategories }) {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleCreateCategory = async (newCategory) => {
-    const category = {
-      ...newCategory,
-      id: Math.max(0, ...categories.map((c) => c.id)) + 1,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    const categoryToCreate = {
-      name: category.name,
-      description: category.description,
-    };
-    await fetch(`http://localhost:8000/catalog/products_category/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(categoryToCreate),
-    });
-    setCategories([...categories, category]);
-    setIsFormOpen(false);
+    try {
+      const {data: createdCategory } = await api.post(`/catalog/products_category/`, newCategory)
+      toast.success("Categoría creada con éxito!");
+      setCategories((prev)=> [...prev, createdCategory]);
+      setIsFormOpen(false);
+    }catch(error){
+      console.error("Error creando la categoria:",error);
+      toast.error("Algo salió mal :(");
+    }
   };
 
   const handleUpdateCategory = async (updatedCategory) => {
-    await fetch(
-      `http://localhost:8000/catalog/products_category/${updatedCategory.id}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedCategory),
-      }
-    );
-    setCategories(
-      categories.map((category) =>
-        category.id === updatedCategory.id
-          ? { ...updatedCategory, updated_at: new Date().toISOString() }
-          : category
-      )
-    );
-    setIsFormOpen(false);
-    setIsEditing(false);
+    
+    try {
+      const { data: updated } = await api.patch(`/catalog/products_category/${updatedCategory.id}/`, updatedCategory);
+      toast.success("Categoría actualizada con éxito!");
+      setCategories((prev)=>
+        prev.map((category) => 
+          category.id === updatedCategory.id ? updated : category)
+      );
+      setIsFormOpen(false);
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error actualizando la categoría:", error);
+      toast.error("Algo salió mal :(");
+    }
   };
 
   const handleDeleteCategory = async () => {
     if (currentCategory) {
-      await fetch(
-        `http://localhost:8000/catalog/products_category/${currentCategory.id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+      try {
+        await api.delete(`/catalog/products_category/${currentCategory.id}`)
+        toast.success("Categoría eliminada con éxito!");
+        
+        setCategories((prev) =>
+          prev.filter((category) => category.id !== currentCategory.id)
       );
-      setCategories(
-        categories.filter((category) => category.id !== currentCategory.id)
-      );
-      setIsDeleteOpen(false);
-      setCurrentCategory(null);
+        setIsDeleteOpen(false);
+        setCurrentCategory(null);
+      } catch(error){
+        console.error("Error eliminando la categoria:", error);
+        toast.error("Algo salió mal :(");
+
+      }
     }
   };
 
-  const openCategoryDetails = (category) => {
-    setCurrentCategory(category);
-    setIsDetailsOpen(true);
+  const openCategoryDetails = async(category) => {
+    if (category) {
+      try {
+        
+        const {data} = await api.get(`/catalog/products_category/${category.id}/`);
+        setCurrentCategory(data);
+        setIsDetailsOpen(true);
+      } catch (error) {
+        console.error("Error fetching category details:", error);
+        setCurrentCategory(category);
+      }
+    }
   };
 
   const openEditForm = (category) => {

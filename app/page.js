@@ -4,10 +4,9 @@ import { CheckSquare, Package, Users, ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (
-    <main className="container mx-auto py-10 px-4">
-      <h1 className="text-4xl font-bold mb-8 text-center">Home</h1>
+    <main className="container mx-auto py-5 px-2">
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-10 bg-gradient-to-b from-background to-muted/30">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
+        <div className="max-w-4xl mx-auto text-center space-y-5">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
             Sistema de Gestión Empresarial
           </h1>
@@ -45,7 +44,10 @@ export default function Home() {
 
             <Link
               className="bg-card p-6 rounded-lg shadow-sm border flex flex-col items-center text-center"
-              href={"/customers"}
+              href={""}
+              // HACK: Se comenta temporalmente el enlace a /customers porque causa un error de navegación.
+              // Se necesita investigar como solucionar la falla al renderizar.
+              // href={"/customers"}
             >
               <Users className="h-12 w-12 mb-4 text-primary" />
               <h2 className="text-xl font-semibold mb-2">

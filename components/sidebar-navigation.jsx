@@ -18,6 +18,7 @@ import {
   ChevronRight,
   LogOut,
 } from "lucide-react";
+import { api } from "@/lib/axios";
 
 const navItems = [
   {
@@ -83,30 +84,28 @@ export function SidebarNavigation() {
       return;
     }
 
-    const response = await fetch("http://localhost:8000/auth/logout", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Accept: "application/json",
-      },
-      body: "",
-    });
+    const {data} = await api.post("/auth/logout",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: "application/json",
+        },
+      }
+    ).catch((error) => {
+      console.error("Error logging out:", error);
+      toast.error("Error al cerrar sesión");
+    }
+    )
 
-    const data = await response.json();
-
-    console.log(data.msg);
     localStorage.clear();
 
-    setIsAuthenticated(false);
+    setIsAuthenticated({isAuthenticated: false, user: null});
 
     // Redirigir a la página de inicio
     router.push("/");
   };
 
-  /*  // Si el usuario no está autenticado, no mostrar el sidebar
-  if (!isAuthenticated) {
-    return null
-  } */
 
   return (
     <>

@@ -7,7 +7,8 @@ import { TaskTable } from "@/components/task/task-table";
 import { TaskForm } from "@/components/task/task-form";
 import { TaskDetails } from "@/components/task/task-details";
 import { DeleteConfirmation } from "@/components/ui/delete-confirmation";
-// import { Button } from "../ui/button";
+import {api} from "@/lib/axios";
+import { toast } from "react-hot-toast";
 
 export function TaskManager({ allTasks }) {
   const [tasks, setTasks] = useState(allTasks);
@@ -18,68 +19,63 @@ export function TaskManager({ allTasks }) {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleCreateTask = async (newTask) => {
-    const task = {
-      ...newTask,
-      id: Math.max(0, ...tasks.map((t) => t.id)) + 1,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
+    try{
+      const {data : createdTask} = await api.post(`/tasks/`, newTask);
+      toast.success("Tarea creada con éxito!");
+      setTasks((prev)=>[...prev, createdTask]);
+      setIsFormOpen(false);
+    }catch(error){
+      console.error("Error creando la tarea:",error);
+      toast.error("Algo salió mal :(");
+    }
 
-    const taskToCreate = {
-      title: task.title,
-      description: task.description,
-    };
-
-    await fetch(`http://localhost:8000/tasks/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(taskToCreate),
-    });
-
-    setTasks([...tasks, task]);
-    setIsFormOpen(false);
   };
 
   const handleUpdateTask = async (updatedTask) => {
-    await fetch(`http://localhost:8000/tasks/${updatedTask.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedTask),
-    });
 
-    setTasks(
-      tasks.map((task) =>
-        task.id === updatedTask.id
-          ? { ...updatedTask, updated_at: new Date().toISOString() }
-          : task
-      )
-    );
-    setIsFormOpen(false);
-    setIsEditing(false);
-  };
+    try{
 
-  const handleDeleteTask = async () => {
-    if (currentTask) {
-      await fetch(`http://localhost:8000/tasks/${currentTask.id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      setTasks(tasks.filter((task) => task.id !== currentTask.id));
-      setIsDeleteOpen(false);
-      setCurrentTask(null);
+      const {data: updated} = await api.patch(`/tasks/${updatedTask.id}`, updatedTask);
+      toast.success("Tarea actualizada con éxito!");
+      setTasks((prev)=>
+        prev.map((task) =>
+          task.id === updatedTask.id? updated : task)
+      );
+      setIsFormOpen(false);
+      setIsEditing(false);
+    }catch(error){
+      console.error("Error editando la tarea:",error);
+      toast.error("Algo salió mal :(");
     }
   };
 
-  const openTaskDetails = (task) => {
-    setCurrentTask(task);
-    setIsDetailsOpen(true);
+  const handleDeleteTask = async () => {
+    try{
+
+      if (currentTask) {
+        await api.delete(`/tasks/${currentTask.id}`);
+        toast.success("Tarea eliminada con exito!");
+        setTasks((prev)=>
+          prev.filter((task) => task.id !== currentTask.id));
+        setIsDeleteOpen(false);
+        setCurrentTask(null);
+      }
+    }catch(error){
+      console.error("Error eliminando la tarea:",error);
+      toast.error("Algo salió mal :("); 
+    }
+  };
+
+  const openTaskDetails = async(task) => {
+
+    try{
+      const {data} = await api.get(`/tasks/${task.id}/`);
+      setCurrentTask(data);
+      setIsDetailsOpen(true);
+    }catch(error){
+      console.error("Error obteniendo la tarea:",error);
+      toast.error("No se pudo cargar la tarea.");
+    }
   };
 
   const openEditForm = (task) => {

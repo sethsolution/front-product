@@ -18,8 +18,8 @@ Antes de comenzar, asegúrate de tener instalado:
 
 - Node.js (versión 18.x o superior)
 - npm, yarn, o pnpm
-> [!IMPORTANT]
-> Conexión al backend de FastAPI 
+  > [!IMPORTANT]
+  > Conexión al backend de FastAPI
 
 ## 📦 Instalación
 
@@ -45,6 +45,26 @@ Abre el proyecto en tu editor:
 
 ```bash
 $ code .
+```
+
+### Instalar dependencias
+
+```bash
+$ npm install
+```
+
+### Variables de entorno
+
+Copia el archivo de ejemplo y edita con tus valores reales:
+
+```bash
+$ cp .env.local.example .env
+```
+
+Edita .env cambia el valor de "NEXT_PUBLIC_API_URL":
+
+```bash
+$ NEXT_PUBLIC_API_URL=http://localhost:8000/
 ```
 
 ## 🚀 EJECUCIÓN DEL PROYECTO
@@ -88,5 +108,3 @@ Asegúrate de tener el backend en ejecución en `http://localhost:8000`.
 ## BIBLIOGRAFÍA
 
 - [Next.js Documentation](https://nextjs.org/docs)
-- [React Documentation](https://reactjs.org/docs)
-- [Tailwind CSS](https://tailwindcss.com/docs)
