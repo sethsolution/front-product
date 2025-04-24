@@ -19,29 +19,10 @@ export function TaskManager({ allTasks }) {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleCreateTask = async (newTask) => {
-    const task = {
-      ...newTask,
-      id: Math.max(0, ...tasks.map((t) => t.id)) + 1,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-
-    const taskToCreate = {
-      title: task.title,
-      description: task.description,
-    };
-
-    // await fetch(`http://localhost:8000/tasks/`, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(taskToCreate),
-    // });
     try{
-      await api.post(`/tasks/`, taskToCreate);
+      const {data : createdTask} = await api.post(`/tasks/`, newTask);
       toast.success("Tarea creada con éxito!");
-      setTasks([...tasks, task]);
+      setTasks((prev)=>[...prev, createdTask]);
       setIsFormOpen(false);
     }catch(error){
       console.error("Error creando la tarea:",error);
@@ -51,23 +32,14 @@ export function TaskManager({ allTasks }) {
   };
 
   const handleUpdateTask = async (updatedTask) => {
-    // await fetch(`http://localhost:8000/tasks/${updatedTask.id}`, {
-    //   method: "PATCH",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(updatedTask),
-    // });``
+
     try{
 
-      await api.patch(`/tasks/${updatedTask.id}`, updatedTask);
+      const {data: updated} = await api.patch(`/tasks/${updatedTask.id}`, updatedTask);
       toast.success("Tarea actualizada con éxito!");
-      setTasks(
-        tasks.map((task) =>
-          task.id === updatedTask.id
-            ? { ...updatedTask, updated_at: new Date().toISOString() }
-            : task
-        )
+      setTasks((prev)=>
+        prev.map((task) =>
+          task.id === updatedTask.id? updated : task)
       );
       setIsFormOpen(false);
       setIsEditing(false);
@@ -83,7 +55,8 @@ export function TaskManager({ allTasks }) {
       if (currentTask) {
         await api.delete(`/tasks/${currentTask.id}`);
         toast.success("Tarea eliminada con exito!");
-        setTasks(tasks.filter((task) => task.id !== currentTask.id));
+        setTasks((prev)=>
+          prev.filter((task) => task.id !== currentTask.id));
         setIsDeleteOpen(false);
         setCurrentTask(null);
       }

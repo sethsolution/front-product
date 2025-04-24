@@ -201,7 +201,6 @@ export function ProductManager() {
   const openProductDetails = async (product) => {
     try {
       const { data } = await api.get(`/products/${product.id}`);
-      console.log(data);
       
       const completeProduct = {
         ...data,
@@ -215,7 +214,6 @@ export function ProductManager() {
         },
       };
       setCurrentProduct(completeProduct);
-      console.log(completeProduct)
       setIsDetailsOpen(true);
     } catch (err) {
       console.error("Error al cargar detalles del producto:", err);
