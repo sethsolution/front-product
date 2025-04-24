@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, User } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { api } from "@/lib/axios";
 
 export function UserProfile() {
   const [user, setUser] = useState({
@@ -39,21 +40,13 @@ export function UserProfile() {
       }
 
       try {
-        const response = await fetch("http://localhost:8000/auth/users/me/", {
-          method: "GET",
+
+        const { data: userData } = await api.get("/auth/users/me/", {
           headers: {
-            Accept: "application/json",
             Authorization: `Bearer ${accessToken}`,
           },
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-
-        const userData = await response.json();
-
-        console.log("User data:", userData);
 
         setUser((prev) => ({
           ...prev,

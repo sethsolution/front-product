@@ -19,6 +19,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { api } from "@/lib/axios";
 
 export function SignupForm() {
   const router = useRouter();
@@ -107,17 +108,7 @@ export function SignupForm() {
         password: formData.password,
       };
 
-      const resp = await fetch("http://localhost:8000/auth/users/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(newUser),
-      });
-
-      const data = await resp.json();
-
+      const {data} = await api.post("/auth/users/", newUser)
       if (!data.id) {
         setError("Error al registrar usuario");
         return;
