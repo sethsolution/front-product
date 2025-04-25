@@ -21,9 +21,9 @@ Antes de comenzar, asegúrate de tener instalado:
   > [!IMPORTANT]
   > Conexión al backend de FastAPI
 
-## 📦 Instalación
+## ⚙️ Instalación
 
-### Clonar el repositorio
+### 1. Clonar el repositorio
 
 Inicia clonando el proyecto en tu carpeta de desarrollo:
 
@@ -31,7 +31,7 @@ Inicia clonando el proyecto en tu carpeta de desarrollo:
 $ git clone https://github.com/sethsolution/front-product
 ```
 
-### Acceder al proyecto
+### 2. Acceder al proyecto
 
 Navega al directorio del proyecto:
 
@@ -39,7 +39,7 @@ Navega al directorio del proyecto:
 $ cd front-product
 ```
 
-### Abrir en Visual Studio Code
+### 3. Abrir en Visual Studio Code
 
 Abre el proyecto en tu editor:
 
@@ -47,21 +47,21 @@ Abre el proyecto en tu editor:
 $ code .
 ```
 
-### Instalar dependencias
+### 4. Instalar dependencias
 
 ```bash
 $ npm install
 ```
 
-### Variables de entorno
+### 5. Configurar variables de entorno
 
 Copia el archivo de ejemplo y edita con tus valores reales:
 
 ```bash
-$ cp .env.local.example .env
+.env.local.example > .env
 ```
 
-Edita .env cambia el valor de "NEXT_PUBLIC_API_URL":
+Asegúrate de que `NEXT_PUBLIC_API_URL` apunte al servidor donde está corriendo tu API REST.
 
 ```bash
 $ NEXT_PUBLIC_API_URL=http://localhost:8000/
@@ -69,41 +69,21 @@ $ NEXT_PUBLIC_API_URL=http://localhost:8000/
 
 ## 🚀 EJECUCIÓN DEL PROYECTO
 
-Hay varias formas de ejecutar el proyecto:
-
 ### Modo Desarrollo
 
 Para ejecutar el proyecto en modo desarrollo:
 
 ```bash
 $ npm run dev
-# o
-$ yarn dev
-# o
-$ pnpm dev
-```
-
-### Compilación para Producción
-
-Para compilar la aplicación para producción:
-
-```bash
-$ npm run build
-$ npm start
-# o
-$ yarn build
-$ yarn start
 ```
 
 ## 🌐 Acceso a la Aplicación
 
-El sistema correrá por defecto en:
-http://localhost:3000
+El sistema correrá por defecto en: `http://localhost:3000`.
 
 ## 🔗 CONFIGURACIÓN DEL BACKEND
 
-Este frontend está diseñado para trabajar con un backend de FastAPI.
-Asegúrate de tener el backend en ejecución en `http://localhost:8000`.
+La API debe estar corriendo de manera independiente. Consulta su documentación en el repositorio correspondiente: [API REST Repo](https://github.com/henrytaby/fastapi-product)
 
 ## BIBLIOGRAFÍA
 
