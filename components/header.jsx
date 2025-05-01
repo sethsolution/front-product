@@ -57,7 +57,6 @@ export function Header() {
           localStorage.removeItem("accessToken");
           setAuthState({isAuthenticated: false, user: null});
           toast.error("Sesión expirada. Por favor inicie sesión nuevamente.")
-          router.push("/");
         }
 
       }
