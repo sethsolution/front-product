@@ -25,7 +25,7 @@ export function CustomerManager() {
     const fetchCustomers = async () => {
       const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
-        router.push("/login");
+        router.push("/login?next=/customers");
         return;
       }
 
