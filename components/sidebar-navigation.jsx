@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/axios";
 import toast from "react-hot-toast";
+import { handleLogoutSession } from "@/lib/logout";
 
 const navItems = [
   {
@@ -81,37 +82,8 @@ export function SidebarNavigation() {
 
   const handleLogout = async () => {
     const accessToken = localStorage.getItem("accessToken"); // 1. "token" -> "accessToken"  2. "" -> no tienes nada
-
-    if (!accessToken) {
-      setIsAuthenticated(false);
-      router.push("/");
-      return;
-    }
-    try{
-
-      await api.post("/auth/logout",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            Accept: "application/json",
-          },
-        }
-      );
-      localStorage.removeItem("accessToken");
-      setIsAuthenticated(false);
-      toast.success("Sesión cerrada correctamente");
-      router.push("/");
-    }catch(error){
-
-      console.error("Error logging out:", error);
-      toast.error("Error al cerrar sesión");
-      if (error.response && error.response.status === 401) {
-        localStorage.removeItem("accessToken");
-        setIsAuthenticated(false);
-        router.push("/");
-      }
-    }
+    await handleLogoutSession(accessToken, router);
+    setIsAuthenticated(false);
   };
 
   return (
