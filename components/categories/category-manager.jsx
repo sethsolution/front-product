@@ -128,7 +128,8 @@ export function CategoryManager({ allCategories }) {
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
         onConfirm={handleDeleteCategory}
-        taskTitle={currentCategory?.name || ""}
+        itemTitle={currentCategory?.name || ""}
+        itemType="categoría"
       />
     </div>
   );

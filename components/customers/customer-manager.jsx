@@ -127,11 +127,12 @@ export function CustomerManager() {
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
         onConfirm={handleDeleteCustomer}
-        taskTitle={
+        itemTitle={
           currentCustomer
             ? `${currentCustomer.name} ${currentCustomer.last_name}`
             : ""
         }
+        itemType="cliente"
       />
     </div>
   );

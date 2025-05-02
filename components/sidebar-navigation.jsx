@@ -17,8 +17,10 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  Home,
 } from "lucide-react";
 import { api } from "@/lib/axios";
+import toast from "react-hot-toast";
 
 const navItems = [
   {
@@ -62,9 +64,9 @@ export function SidebarNavigation() {
 
   // Verificar si el usuario está autenticado
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-    setIsAuthenticated(isLoggedIn);
-
+    const accessToken = localStorage.getItem("accessToken");
+    setIsAuthenticated(!!accessToken);
+    
     // Guardar el estado del sidebar en localStorage
     const savedSidebarState = localStorage.getItem("sidebarCollapsed");
     if (savedSidebarState) {
@@ -81,31 +83,36 @@ export function SidebarNavigation() {
     const accessToken = localStorage.getItem("accessToken"); // 1. "token" -> "accessToken"  2. "" -> no tienes nada
 
     if (!accessToken) {
+      setIsAuthenticated(false);
+      router.push("/");
       return;
     }
+    try{
 
-    const {data} = await api.post("/auth/logout",
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          Accept: "application/json",
-        },
-      }
-    ).catch((error) => {
+      await api.post("/auth/logout",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            Accept: "application/json",
+          },
+        }
+      );
+      localStorage.removeItem("accessToken");
+      setIsAuthenticated(false);
+      toast.success("Sesión cerrada correctamente");
+      router.push("/");
+    }catch(error){
+
       console.error("Error logging out:", error);
       toast.error("Error al cerrar sesión");
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem("accessToken");
+        setIsAuthenticated(false);
+        router.push("/");
+      }
     }
-    )
-
-    localStorage.clear();
-
-    setIsAuthenticated({isAuthenticated: false, user: null});
-
-    // Redirigir a la página de inicio
-    router.push("/");
   };
-
 
   return (
     <>
@@ -144,11 +151,11 @@ export function SidebarNavigation() {
         <div className="flex h-16 items-center border-b px-6 justify-between">
           {!isCollapsed && (
             <Link href="/home" className="flex items-center gap-2">
-              <CheckSquare className="h-6 w-6" />
-              <span className="text-xl font-bold">Sistema</span>
+              <Home className="h-6 w-6" />
+              <span className="text-xl font-bold">Inicio</span>
             </Link>
           )}
-          {isCollapsed && <CheckSquare className="h-6 w-6 mx-auto" />}
+          {isCollapsed && <Home className="h-6 w-6 mx-auto" />}
           <Button
             variant="ghost"
             size="icon"
@@ -191,6 +198,9 @@ export function SidebarNavigation() {
           </nav>
 
           {/* Botón de cerrar sesión en la parte inferior */}
+          {
+            isAuthenticated && (
+              
           <div className="p-4 border-t">
             <Button
               variant="ghost"
@@ -206,6 +216,7 @@ export function SidebarNavigation() {
               {!isCollapsed && <span>Cerrar Sesión</span>}
             </Button>
           </div>
+            )}
         </div>
       </div>
 
