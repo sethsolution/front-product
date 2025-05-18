@@ -63,32 +63,28 @@ export function SidebarNavigation() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(true);
 
-  // Verificar si el usuario está autenticado
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     setIsAuthenticated(!!accessToken);
     
-    // Guardar el estado del sidebar en localStorage
     const savedSidebarState = localStorage.getItem("sidebarCollapsed");
     if (savedSidebarState) {
       setIsCollapsed(savedSidebarState === "true");
     }
   }, []);
 
-  // Guardar el estado del sidebar cuando cambia
   useEffect(() => {
     localStorage.setItem("sidebarCollapsed", isCollapsed.toString());
   }, [isCollapsed]);
 
   const handleLogout = async () => {
-    const accessToken = localStorage.getItem("accessToken"); // 1. "token" -> "accessToken"  2. "" -> no tienes nada
+    const accessToken = localStorage.getItem("accessToken"); 
     await handleLogoutSession(accessToken, router);
     setIsAuthenticated(false);
   };
 
   return (
     <>
-      {/* Mobile menu button */}
       <Button
         variant="ghost"
         size="icon"
@@ -102,7 +98,6 @@ export function SidebarNavigation() {
         )}
       </Button>
 
-      {/* Sidebar backdrop for mobile */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden"
@@ -110,7 +105,6 @@ export function SidebarNavigation() {
         />
       )}
 
-      {/* Sidebar */}
       <div
         className={cn(
           "fixed top-16 bottom-0 left-0 z-40 border-r bg-background transition-all duration-300 ease-in-out",
@@ -169,7 +163,6 @@ export function SidebarNavigation() {
             })}
           </nav>
 
-          {/* Botón de cerrar sesión en la parte inferior */}
           {
             isAuthenticated && (
               
@@ -192,7 +185,6 @@ export function SidebarNavigation() {
         </div>
       </div>
 
-      {/* Spacer para empujar el contenido principal */}
       <div
         className={cn(
           "hidden md:block flex-shrink-0 transition-all duration-300 ease-in-out",

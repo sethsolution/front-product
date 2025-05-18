@@ -37,12 +37,10 @@ export function SignupForm() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
     if (error) setError(null);
   };
 
   const validateForm = () => {
-    // Check for empty fields
     for (const [key, value] of Object.entries(formData)) {
       if (!value.trim()) {
         setError(`El campo ${getFieldLabel(key)} es obligatorio`);
@@ -50,20 +48,17 @@ export function SignupForm() {
       }
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       setError("El formato del correo electrónico no es válido");
       return false;
     }
 
-    // Check password length
     if (formData.password.length < 6) {
       setError("La contraseña debe tener al menos 6 caracteres");
       return false;
     }
 
-    // Check if passwords match
     if (formData.password !== formData.confirm_password) {
       setError("Las contraseñas no coinciden");
       return false;

@@ -43,7 +43,7 @@ export function CustomerManager() {
   
         setCustomers(data);
       } catch (error) {
-        // console.error("Error fetching user data:", error);
+        console.error("Error fetching user data:", error);
         if (error.response?.status === 401) {
           setIsAuthModalOpen(true);
         } else {
