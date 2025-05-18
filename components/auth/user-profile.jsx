@@ -9,13 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AuthRequiredModal } from "./auth-modal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/axios";
-import toast from "react-hot-toast";
 
 export function UserProfile() {
   const [user, setUser] = useState({
@@ -24,12 +22,12 @@ export function UserProfile() {
     first_name: "",
     last_name: "",
     is_verified: false,
+    //created_at: "2023-01-15T10:30:00Z",
     avatar: "",
+    // tasks_completed: 12,
+    // tasks_pending: 5,
     bio: "",
   });
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [currentReturnPath, setCurrentReturnPath] = useState(null);
 
   const router = useRouter();
 
@@ -37,20 +35,18 @@ export function UserProfile() {
     const fetchUserData = async () => {
       const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
-        const currentPath = window.location.pathname;
-        setIsAuthModalOpen(true);
-        setCurrentReturnPath(currentPath);
-        setIsLoading(false);
+        router.push("/login");
         return;
       }
 
       try {
-        setIsLoading(true);
+
         const { data: userData } = await api.get("/auth/users/me/", {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
+
 
         setUser((prev) => ({
           ...prev,
@@ -59,15 +55,9 @@ export function UserProfile() {
           last_name: userData.last_name,
           email: userData.email,
         }));
-        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching user data:", error);
-        setIsLoading(false);
-        if (error.response?.status === 401) {
-          setIsAuthModalOpen(true);
-        } else {
-          toast.error("No se pudo cargar la información del usuario");
-        }
+        router.push("/login");
       }
     };
 
@@ -75,28 +65,11 @@ export function UserProfile() {
   }, [router]);
 
   const getInitials = (firstName, lastName) => {
-    const firstInitial = firstName && firstName.length > 0 ? firstName.charAt(0) : "";
-    const lastInitial = lastName && lastName.length > 0 ? lastName.charAt(0) : "";
-    return `${firstInitial}${lastInitial}`.toUpperCase() || "U";
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto py-10 px-4 max-w-4xl flex justify-center">
-        <p>Cargando información del usuario...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto py-10 px-4 max-w-4xl">
-      {isAuthModalOpen && (
-        <AuthRequiredModal 
-          isOpen={isAuthModalOpen} 
-          onClose={() => setIsAuthModalOpen(false)} 
-          returnPath={currentReturnPath}
-        />
-      )}
       <Card>
         <CardHeader className="pb-0">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -111,6 +84,7 @@ export function UserProfile() {
                 </AvatarFallback>
               </Avatar>
               <div>
+                
                 <CardTitle className="text-2xl flex items-center space-x-1">
                   <span>{user.first_name} {user.last_name}</span>
                   {user.is_verified && <CheckCircleIcon className="h-5 w-5 text-blue-500" />}
@@ -127,6 +101,7 @@ export function UserProfile() {
           <Tabs defaultValue="info" className="w-full">
             <TabsList className="grid w-full grid-cols-1">
               <TabsTrigger value="info">Información</TabsTrigger>
+              {/* <TabsTrigger value="stats">Estadísticas</TabsTrigger> */}
             </TabsList>
             <TabsContent value="info" className="space-y-6 pt-4">
               <div className="grid gap-4">
@@ -155,6 +130,33 @@ export function UserProfile() {
                 )}
               </div>
             </TabsContent>
+            {/* TODO: Agregar un apartado de estadisticas del usuario */}
+            {/* <TabsContent value="stats" className="pt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">
+                      Tareas completadas
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold">
+                      {user.tasks_completed}
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">Tareas pendientes</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold">
+                      {user.tasks_pending}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent> */}
           </Tabs>
         </CardContent>
       </Card>

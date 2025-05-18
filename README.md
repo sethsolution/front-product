@@ -1,85 +1,110 @@
-# Product and Task System - Frontend
+# 🚀 Product and Task System - Frontend
 
-## Descripción General
+## 📋 Descripción del Proyecto
 
-Este proyecto es el frontend de un sistema de gestión de productos, tareas, clientes, categorías y marcas. Está desarrollado con **Next.js** y **React**, y se conecta a una [API REST](https://github.com/henrytaby/fastapi-product) construida con FastAPI. Proporciona una interfaz moderna y responsiva para la administración de los recursos del sistema.
+Este es un frontend desarrollado con Next.js y React para un Sistema de Gestión de Productos y Tareas. El proyecto proporciona una interfaz de usuario basica y eficiente para interactuar con el backend de FastAPI.
 
-## Funcionalidades Principales
+### 🔹 Funcionalidades principales:
 
-- Autenticación de usuarios (registro, login, perfil)
-- Gestión de tareas
-- Gestión de productos (con categorías y marcas)
-- Gestión de clientes
-- Dashboard con estadísticas y accesos rápidos(funcionalidad en estapa inicial)
+- Gestión de Tareas
+- Gestión de Productos
+- Gestión de Categorias
+- Gestión de Marcas
+- Gestión de Clientes
 
-## Requisitos Previos
+## 🔧 Requisitos Previos
 
-- Node.js 18.x o superior
-- npm, yarn o pnpm
-- Acceso a la API backend (FastAPI)
+Antes de comenzar, asegúrate de tener instalado:
 
-## Instalación y Puesta en Marcha
+- Node.js (versión 18.x o superior)
+- npm, yarn, o pnpm
+  > [!IMPORTANT]
+  > Conexión al backend de FastAPI
 
-### 1. Clonar el repositorio
+## 📦 Instalación
 
-```bash
-git clone https://github.com/sethsolution/front-product
-```
+### Clonar el repositorio
 
-### 2. Acceder al proyecto
-
-```bash
-cd front-product
-```
-
-### 3. Instalar dependencias
+Inicia clonando el proyecto en tu carpeta de desarrollo:
 
 ```bash
-npm install
+$ git clone https://github.com/sethsolution/front-product
 ```
 
-### 4. Configurar variables de entorno
+### Acceder al proyecto
 
-Copia el archivo de ejemplo y edítalo con tus valores reales:
+Navega al directorio del proyecto:
 
 ```bash
-cp .env.local.example .env
+$ cd front-product
 ```
 
-Asegúrate de que `NEXT_PUBLIC_API_URL` apunte al backend:
+### Abrir en Visual Studio Code
 
-```
-NEXT_PUBLIC_API_URL=http://localhost:8000
-```
-
-### 5. Ejecutar en modo desarrollo
+Abre el proyecto en tu editor:
 
 ```bash
-npm run dev
+$ code .
 ```
 
-La aplicación estará disponible en [http://localhost:3000](http://localhost:3000)
+### Instalar dependencias
 
+```bash
+$ npm install
+```
 
-## Scripts Útiles
+### Variables de entorno
 
-- `npm run dev`: Ejecuta el proyecto en modo desarrollo
-- `npm run build`: Compila la aplicación para producción
-- `npm run start`: Inicia la aplicación en modo producción
+Copia el archivo de ejemplo y edita con tus valores reales:
 
-## Flujo de Autenticación y Conexión
+```bash
+$ cp .env.local.example .env
+```
 
-- El frontend utiliza JWT para autenticación. El token se almacena en localStorage tras el login o registro.
-- Todas las peticiones protegidas incluyen el token en el header `Authorization`.
-- Si el token expira o es inválido, el usuario es redirigido a la pantalla de login.
+Edita .env cambia el valor de "NEXT_PUBLIC_API_URL":
 
-## Conexión con el Backend
+```bash
+$ NEXT_PUBLIC_API_URL=http://localhost:8000/
+```
 
-Asegúrate de que la API de FastAPI esté corriendo y accesible en la URL configurada en `NEXT_PUBLIC_API_URL`.
+## 🚀 EJECUCIÓN DEL PROYECTO
 
-## Recursos y Bibliografía
+Hay varias formas de ejecutar el proyecto:
+
+### Modo Desarrollo
+
+Para ejecutar el proyecto en modo desarrollo:
+
+```bash
+$ npm run dev
+# o
+$ yarn dev
+# o
+$ pnpm dev
+```
+
+### Compilación para Producción
+
+Para compilar la aplicación para producción:
+
+```bash
+$ npm run build
+$ npm start
+# o
+$ yarn build
+$ yarn start
+```
+
+## 🌐 Acceso a la Aplicación
+
+El sistema correrá por defecto en:
+http://localhost:3000
+
+## 🔗 CONFIGURACIÓN DEL BACKEND
+
+Este frontend está diseñado para trabajar con un backend de FastAPI.
+Asegúrate de tener el backend en ejecución en `http://localhost:8000`.
+
+## BIBLIOGRAFÍA
 
 - [Next.js Documentation](https://nextjs.org/docs)
-- [React Documentation](https://react.dev/)
-- [FastAPI Documentation](https://fastapi.tiangolo.com/)
-- [Repositorio Backend - fastapi-product](https://github.com/henrytaby/fastapi-product)

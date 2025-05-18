@@ -7,8 +7,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import React, { useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, Eye, Package } from "lucide-react";
@@ -93,12 +91,12 @@ export const ProductTable = ({
                     <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center overflow-hidden">
                       {product.image ? (
                         <Image
-                          src={product.image || "/placeholder.svg"}
-                          alt={product.title}
-                          className="h-full w-full object-cover"
-                          width={40}
-                          height={40}
-                        />
+                        src={product.image || "/placeholder.svg"}
+                        alt={product.title}
+                        width={40}  // Add this property
+                        height={40} // Add this property too, for proper aspect ratio
+                        className="h-full w-full object-cover"
+                      />
                       ) : (
                         <Package className="h-5 w-5 text-muted-foreground" />
                       )}

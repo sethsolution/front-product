@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { CustomerTable } from "./customer-table";
 import { CustomerForm } from "./customer-form";
 import { CustomerDetails } from "./customer-dateils";
 import { DeleteConfirmation } from "../ui/delete-confirmation";
-import { AuthRequiredModal } from "../auth/auth-modal";
 import { api } from "@/lib/axios";
 import toast from "react-hot-toast";
 
@@ -17,10 +16,8 @@ export function CustomerManager() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [currentCustomer, setCurrentCustomer] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentReturnPath, setCurrentReturnPath] = useState(null);
 
   const router = useRouter();
 
@@ -28,34 +25,27 @@ export function CustomerManager() {
     const fetchCustomers = async () => {
       const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
-        const currentPath = window.location.pathname;
-        setIsAuthModalOpen(true);
-        setCurrentReturnPath(currentPath);
+        router.push("/login");
         return;
       }
-      
+
       try { 
         const {data} = await api.get(`/customers/`,{
           headers: {
             Authorization: `Bearer ${accessToken}`,
           }
         })
-  
+
         setCustomers(data);
       } catch (error) {
         console.error("Error fetching user data:", error);
-        if (error.response?.status === 401) {
-          setIsAuthModalOpen(true);
-        } else {
-          toast.error("No se pudo cargar la información de clientes");
-        }
+        toast.error("No se pudo cargar la información de clientes")
+        router.push("/login");
       }
-      
-        
     };
 
     fetchCustomers();
-  }, []);
+  }, [router]);
 
   const handleDeleteCustomer = async () => {
     if (currentCustomer) {
@@ -137,17 +127,11 @@ export function CustomerManager() {
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
         onConfirm={handleDeleteCustomer}
-        itemTitle={
+        taskTitle={
           currentCustomer
             ? `${currentCustomer.name} ${currentCustomer.last_name}`
             : ""
         }
-        itemType="cliente"
-      />
-      <AuthRequiredModal 
-        isOpen={isAuthModalOpen} 
-        onClose={() => setIsAuthModalOpen(false)} 
-        returnPath={currentReturnPath}
       />
     </div>
   );
