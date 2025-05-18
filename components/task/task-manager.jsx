@@ -126,8 +126,7 @@ export function TaskManager({ allTasks }) {
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
         onConfirm={handleDeleteTask}
-        itemTitle={currentTask?.title || ""}
-        itemType="tarea"
+        taskTitle={currentTask?.title || ""}
       />
     </div>
   );

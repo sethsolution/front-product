@@ -127,8 +127,7 @@ export const BrandManager = ({ allBrands }) => {
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
         onConfirm={handleDeleteBrand}
-        itemTitle={currentBrand?.name || ""}
-        itemType="marca"
+        taskTitle={currentBrand?.name || ""}
       />
     </div>
   );

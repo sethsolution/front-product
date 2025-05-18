@@ -1,8 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    unoptimized: true,
-  },
+    images: {
+      domains: ['th.bing.com'],
+    },
 };
 
 export default nextConfig;
+
+

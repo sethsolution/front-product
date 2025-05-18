@@ -14,27 +14,16 @@ export function DeleteConfirmation({
   isOpen,
   onClose,
   onConfirm,
-  itemTitle,
-  itemType="elemento",
-
+  taskTitle
 }) {
-
-  const defaultTitle = `¿Está seguro de eliminar ${itemType === "elemento" ? "este" : ["producto","cliente"].includes(itemType) ? "este" : "esta"} ${itemType}?`;
-
-
-  const defaultDescription = (
-    <>
-      Está a punto de eliminar {itemType === "elemento" ? "el" : itemType === "producto" ? "el" : itemType === "cliente" ? "al" : "la"} {itemType}{" "}
-      <span className="font-medium">&quot;{itemTitle}&quot;</span>. Esta acción no se puede deshacer.
-    </>
-  );
   return (
     <AlertDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{defaultTitle}</AlertDialogTitle>
+          <AlertDialogTitle>¿Está seguro de eliminar esta tarea?</AlertDialogTitle>
           <AlertDialogDescription>
-            {defaultDescription}
+            Está a punto de eliminar la tarea <span className="font-medium">&quot;{taskTitle}&quot;</span>. Esta acción no se
+            puede deshacer.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

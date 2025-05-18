@@ -44,7 +44,10 @@ export default function Home() {
 
             <Link
               className="bg-card p-6 rounded-lg shadow-sm border flex flex-col items-center text-center"
-              href={"/customers"}
+              href={""}
+              // HACK: Se comenta temporalmente el enlace a /customers porque causa un error de navegación.
+              // Se necesita investigar como solucionar la falla al renderizar.
+              // href={"/customers"}
             >
               <Users className="h-12 w-12 mb-4 text-primary" />
               <h2 className="text-xl font-semibold mb-2">

@@ -1,10 +1,10 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { LayoutWrapper } from '@/components/layout-wrapper';
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"], 
+  subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
@@ -19,13 +19,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es">
+    <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <LayoutWrapper>
-          {children}
-        </LayoutWrapper>
+        <Toaster position="top-center"/>
+        {children}
       </body>
     </html>
   );
