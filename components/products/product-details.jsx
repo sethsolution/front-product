@@ -1,10 +1,16 @@
 "use client";
-
+import React, { useState } from "react";
 import Image from "next/image";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { es } from "date-fns/locale";
 import { Package } from "lucide-react";
 
@@ -33,12 +39,12 @@ export function ProductDetails({ isOpen, onClose, product }) {
             <div className="h-40 w-40 rounded-md bg-muted flex items-center justify-center overflow-hidden">
               {product.image ? (
                 <Image
-                src={product.image || "/placeholder.svg"}
-                alt={product.title}
-                width={40}  // Add this property
-                height={40} // Add this property too, for proper aspect ratio
-                className="h-full w-full object-cover"
-              />
+                  src={product.image || "/placeholder.svg"}
+                  alt={product.title}
+                  className="h-full w-full object-cover"
+                  width={40}
+                  height={40}
+                />
               ) : (
                 <Package className="h-10 w-10 text-muted-foreground" />
               )}
@@ -52,12 +58,18 @@ export function ProductDetails({ isOpen, onClose, product }) {
                 <Badge variant="outline">{product.category.name}</Badge>
                 <Badge variant="secondary">{product.brand.name}</Badge>
               </div>
-              <p className="text-xl font-bold mt-2">{formatPrice(product.price)}</p>
+              <p className="text-xl font-bold mt-2">
+                {formatPrice(product.price)}
+              </p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="text-sm font-medium text-muted-foreground">Descripción</h4>
-              <p className="text-sm">{product.description || "Sin descripción"}</p>
+              <h4 className="text-sm font-medium text-muted-foreground">
+                Descripción
+              </h4>
+              <p className="text-sm">
+                {product.description || "Sin descripción"}
+              </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4 text-sm">
@@ -67,7 +79,9 @@ export function ProductDetails({ isOpen, onClose, product }) {
               </div>
 
               <div>
-                <h4 className="font-medium text-muted-foreground">Fecha de creación</h4>
+                <h4 className="font-medium text-muted-foreground">
+                  Fecha de creación
+                </h4>
                 <p>{formatDate(product.created_at)}</p>
               </div>
 

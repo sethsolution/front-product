@@ -288,7 +288,8 @@ export function ProductManager() {
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
         onConfirm={handleDeleteProduct}
-        taskTitle={currentProduct?.title || ""}
+        itemTitle={currentProduct?.title || ""}
+        itemType="producto"
       />
     </div>
   );
