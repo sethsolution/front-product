@@ -28,20 +28,20 @@ export function Header() {
 
   useEffect(() => {
     const fetchUserData = async () => {
+      
       const accessToken = localStorage.getItem("accessToken");
-
       if (!accessToken) {
         setAuthState({ isAuthenticated: false, user: null });
         return;
       }
-
       try {
+  
         const { data } = await api.get("/auth/users/me/", {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-
+  
         setAuthState({
           isAuthenticated: true,
           user: {
@@ -50,6 +50,7 @@ export function Header() {
             last_name: data.last_name,
           },
         });
+
       } catch (error) {
         if (
           (error.response && error.response.status === 401) ||
@@ -57,8 +58,9 @@ export function Header() {
         ) {
           localStorage.removeItem("accessToken");
           setAuthState({ isAuthenticated: false, user: null });
-          toast.error("Sesión expirada. Por favor inicie sesión nuevamente.");
-        }
+          // toast.error("Sesión expirada. Por favor inicie sesión nuevamente.");
+          }
+        
       }
     };
 
