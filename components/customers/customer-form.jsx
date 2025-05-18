@@ -41,11 +41,9 @@ export function CustomerForm({
     },
   });
 
-  // Reset form when dialog opens/closes or when editing different customer
   useEffect(() => {
     if (isOpen) {
       if (customer && isEditing) {
-        // Set form values when editing an existing customer
         setValue("name", customer.name);
         setValue("last_name", customer.last_name);
         setValue("description", customer.description || "");
@@ -97,7 +95,6 @@ export function CustomerForm({
   
     } catch (error) {
       
-      // Manejar errores 422 del backend
       if (error.response?.status === 422) {
         const data = error.response.data;
         if (data.detail?.[0]?.loc[1] === "email") {
@@ -105,7 +102,7 @@ export function CustomerForm({
             type: "server",
             message: "Este correo ya está en uso.",
           });
-          return; // Evitar establecer serverError si ya manejamos el error de email
+          return; 
         }
       }
   

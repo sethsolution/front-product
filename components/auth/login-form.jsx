@@ -59,7 +59,6 @@ export function LoginForm() {
 
       const resp = await getToken(formData.username, formData.password);
 
-      // TODO: migrate to cookies, handle refresh token
       const redirectTo = searchParams.get("next");
 
       if (resp.success) {
