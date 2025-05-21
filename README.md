@@ -1,6 +1,6 @@
 # Product and Task System - Frontend
 
-## Descripción General
+## Descripción General del proyecto
 
 Este proyecto es el frontend de un sistema de gestión de productos, tareas, clientes, categorías y marcas. Está desarrollado con **Next.js** y **React**, y se conecta a una [API REST](https://github.com/henrytaby/fastapi-product) construida con FastAPI. Proporciona una interfaz moderna y responsiva para la administración de los recursos del sistema.
 
