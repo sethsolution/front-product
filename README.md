@@ -80,6 +80,5 @@ Asegúrate de que la API de FastAPI esté corriendo y accesible en la URL config
 ## Recursos y Bibliografía
 
 - [Next.js Documentation](https://nextjs.org/docs)
-- [React Documentation](https://react.dev/)
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
 - [Repositorio Backend - fastapi-product](https://github.com/henrytaby/fastapi-product)
