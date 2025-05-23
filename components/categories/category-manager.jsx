@@ -9,6 +9,7 @@ import { CategoryDetails } from "./category-details";
 import { DeleteConfirmation } from "../ui/delete-confirmation";
 import { api } from "@/lib/axios";
 import toast from "react-hot-toast";
+import { CategoryList } from "./category-list";
 
 export function CategoryManager({ allCategories }) {
   const [categories, setCategories] = useState(allCategories);
@@ -106,7 +107,7 @@ export function CategoryManager({ allCategories }) {
           Nueva Categoría
         </Button>
       </div>
-      <CategoryTable
+      <CategoryList
         categories={categories}
         onViewCategory={openCategoryDetails}
         onEditCategory={openEditForm}
