@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
-import { CategoryTable } from "./category-table";
 import { CategoryForm } from "./category-form";
 import { CategoryDetails } from "./category-details";
 import { DeleteConfirmation } from "../ui/delete-confirmation";
