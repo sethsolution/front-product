@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
-import { BrandTable } from "./brand-table";
 import { BrandForm } from "./brand-form";
 import { BrandDetails } from "./brand-details";
 import { DeleteConfirmation } from "../ui/delete-confirmation";
 import { api } from "@/lib/axios";
 import { toast } from "react-hot-toast";
+import { BrandList } from "./brand-list";
 
 export const BrandManager = ({ allBrands }) => {
   const [brands, setBrands] = useState(allBrands);
@@ -19,62 +19,64 @@ export const BrandManager = ({ allBrands }) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleCreateBrand = async (newBrand) => {
-
-    try{
-      const {data : createdBrand} = await api.post(`/catalog/product_brand/`, newBrand);
+    try {
+      const { data: createdBrand } = await api.post(
+        `/catalog/product_brand/`,
+        newBrand
+      );
       toast.success("Marca creada con éxito!");
-      setBrands((prev)=> [...prev, createdBrand]);
+      setBrands((prev) => [...prev, createdBrand]);
       setIsFormOpen(false);
-    }catch(error){
-      console.error("Error creando la marca:",error);
+    } catch (error) {
+      console.error("Error creando la marca:", error);
       toast.error("Algo salió mal :(");
     }
   };
 
   const handleUpdateBrand = async (updatedBrand) => {
-    
-    try{
-      const {data : updated} = await api.patch(`/catalog/product_brand/${updatedBrand.id}/`,updatedBrand);
+    try {
+      const { data: updated } = await api.patch(
+        `/catalog/product_brand/${updatedBrand.id}/`,
+        updatedBrand
+      );
       toast.success("Marca actualizada con éxito!");
-      
+
       setBrands((prev) =>
-        prev.map((brand)=>
-        brand.id === updatedBrand.id ? updated : brand)
+        prev.map((brand) => (brand.id === updatedBrand.id ? updated : brand))
       );
       setIsFormOpen(false);
       setIsEditing(false);
-    }catch(error){
-      console.error("Error actualizando la marca:",error);
+    } catch (error) {
+      console.error("Error actualizando la marca:", error);
       toast.error("Algo salió mal :(");
     }
   };
 
   const handleDeleteBrand = async () => {
     if (currentBrand) {
-      try{
+      try {
         await api.delete(`/catalog/product_brand/${currentBrand.id}/`);
         toast.success("Marca eliminada con éxito!");
-  
-        setBrands((prev)=>
+
+        setBrands((prev) =>
           prev.filter((brand) => brand.id !== currentBrand.id)
-      );
+        );
         setIsDeleteOpen(false);
         setCurrentBrand(null);
-
-      }catch(error){
-      console.error("Error actualizando la marca:",error);
-      toast.error("Algo salió mal :(");
+      } catch (error) {
+        console.error("Error actualizando la marca:", error);
+        toast.error("Algo salió mal :(");
       }
     }
   };
 
   const openBrandDetails = async (brand) => {
-    try{
-      const {data} = await api.get(`/catalog/product_brand/${brand.id}/`);
+    try {
+      const { data } = await api.get(`/catalog/product_brand/${brand.id}/`);
       setCurrentBrand(data);
       setIsDetailsOpen(true);
-    }catch{
-      console.error("Error obteniendo la Marca:",error);
+    } catch {
+      console.error("Error obteniendo la Marca:", error);
       toast.error("No se pudo cargar la Marca.");
     }
   };
@@ -105,7 +107,7 @@ export const BrandManager = ({ allBrands }) => {
           Nueva Marca
         </Button>
       </div>
-      <BrandTable
+      <BrandList
         brands={brands}
         onViewBrand={openBrandDetails}
         onEditBrand={openEditForm}
