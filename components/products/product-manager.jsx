@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PlusCircle, Search } from "lucide-react";
-import { ProductTable } from "./product-table";
 import { ProductForm } from "./product-form";
 import { ProductDetails } from "./product-details";
 import { DeleteConfirmation } from "@/components/ui/delete-confirmation";
@@ -291,12 +290,6 @@ export function ProductManager() {
         </Button>
       </div>
 
-      {/* <ProductTable
-        products={filteredProducts}
-        onViewProduct={openProductDetails}
-        onEditProduct={openEditForm}
-        onDeleteProduct={openDeleteConfirmation}
-      /> */}
       <ProductList
         products={filteredProducts}
         onViewProduct={openProductDetails}
