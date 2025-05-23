@@ -8,6 +8,7 @@ import { ProductDetails } from "./product-details";
 import { DeleteConfirmation } from "@/components/ui/delete-confirmation";
 import { api } from "@/lib/axios";
 import toast from "react-hot-toast";
+import { ProductList } from "./product-list";
 
 export function ProductManager() {
   const [products, setProducts] = useState([]);
@@ -267,6 +268,11 @@ export function ProductManager() {
         onEditProduct={openEditForm}
         onDeleteProduct={openDeleteConfirmation}
       />
+      <ProductList
+        products={products}
+        onViewProduct={openProductDetails}
+        onEditProduct={openEditForm}
+        onDeleteProduct={openDeleteConfirmation}/>
 
       <ProductForm
         isOpen={isFormOpen}
