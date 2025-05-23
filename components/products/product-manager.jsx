@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { PlusCircle, Search } from "lucide-react";
 import { ProductTable } from "./product-table";
 import { ProductForm } from "./product-form";
 import { ProductDetails } from "./product-details";
@@ -21,6 +22,7 @@ export function ProductManager() {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const normalizeProduct = (product, categoriesMap, brandsMap) => {
     const normalizedProduct = { ...product };
@@ -57,7 +59,6 @@ export function ProductManager() {
         api.get("catalog/products_category/"),
         api.get("catalog/product_brand/"),
         api.get("products/"),
-        
       ]);
       const categoriesData = await categoriesResponse.data;
       const brandsData = await brandsResponse.data;
@@ -87,6 +88,27 @@ export function ProductManager() {
     };
     fetchData();
   }, []);
+
+  const filteredProducts = products.filter((product) => {
+    if (!searchTerm.trim()) return true;
+    
+    const search = searchTerm.toLowerCase().trim();
+    
+    if (product.title && product.title.toLowerCase().includes(search)) return true;
+    
+    if (product.description && product.description.toLowerCase().includes(search)) return true;
+    
+    if (product.category && product.category.name && 
+        product.category.name.toLowerCase().includes(search)) return true;
+    
+    if (product.brand && product.brand.name && 
+        product.brand.name.toLowerCase().includes(search)) return true;
+    
+    if (!isNaN(search) && product.price && 
+        product.price.toString().includes(search)) return true;
+    
+    return false;
+  });
 
   const handleCreateProduct = async (newProduct) => {
     try {
@@ -139,12 +161,11 @@ export function ProductManager() {
         brand_id: parseInt(updatedProduct.brandId),
       };
 
-      
       const {data : updatedData} = await api.patch(
         `products/${currentProduct.id}`,
         productToUpdate
       );
-      toast.success("Producto actializado con exito!!");
+      toast.success("Producto actualizado con éxito!");
 
       const category = categories.find(
         (c) => c.id === productToUpdate.category_id
@@ -222,7 +243,6 @@ export function ProductManager() {
     }
   };
   
-
   const openEditForm = (product) => {
     setCurrentProduct(product);
     setIsEditing(true);
@@ -241,7 +261,7 @@ export function ProductManager() {
       <div className="text-center py-10 text-red-500">
         Error: {error}
         <div className="mt-4">
-          <Button onClick={fetchData}>Reintentar</Button>
+          <Button onClick={() => fetchData()}>Reintentar</Button>
         </div>
       </div>
     );
@@ -249,7 +269,16 @@ export function ProductManager() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Productos</h1>
+        <div className="relative w-full md:w-80">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar productos..."
+                className="pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+        
         <Button
           onClick={() => {
             setIsEditing(false);
@@ -262,17 +291,18 @@ export function ProductManager() {
         </Button>
       </div>
 
-      <ProductTable
-        products={products}
+      {/* <ProductTable
+        products={filteredProducts}
         onViewProduct={openProductDetails}
         onEditProduct={openEditForm}
         onDeleteProduct={openDeleteConfirmation}
-      />
+      /> */}
       <ProductList
-        products={products}
+        products={filteredProducts}
         onViewProduct={openProductDetails}
         onEditProduct={openEditForm}
-        onDeleteProduct={openDeleteConfirmation}/>
+        onDeleteProduct={openDeleteConfirmation}
+        />
 
       <ProductForm
         isOpen={isFormOpen}
