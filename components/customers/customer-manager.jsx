@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
-import { CustomerTable } from "./customer-table";
 import { CustomerForm } from "./customer-form";
+import { CustomerList } from "./customers-list";
 import { CustomerDetails } from "./customer-dateils";
 import { DeleteConfirmation } from "../ui/delete-confirmation";
 import { AuthRequiredModal } from "../auth/auth-modal";
@@ -33,14 +33,14 @@ export function CustomerManager() {
         setCurrentReturnPath(currentPath);
         return;
       }
-      
-      try { 
-        const {data} = await api.get(`/customers/`,{
+
+      try {
+        const { data } = await api.get(`/customers/`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
-          }
-        })
-  
+          },
+        });
+
         setCustomers(data);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -50,8 +50,6 @@ export function CustomerManager() {
           toast.error("No se pudo cargar la información de clientes");
         }
       }
-      
-        
     };
 
     fetchCustomers();
@@ -59,28 +57,28 @@ export function CustomerManager() {
 
   const handleDeleteCustomer = async () => {
     if (currentCustomer) {
-      try{
+      try {
         await api.delete(`/customers/${currentCustomer.id}/`);
         toast.success("Clietne eliminado con éxito");
-        setCustomers((prev)=>
+        setCustomers((prev) =>
           prev.filter((customer) => customer.id !== currentCustomer.id)
         );
         setIsDeleteOpen(false);
         setCurrentCustomer(null);
-      }catch(error){
+      } catch (error) {
         console.error("Error eliminando el cliente:", error);
         toast.error("Error elimando el cliente");
       }
-      }
+    }
   };
 
-  const openCustomerDetails = async(customer) => {
-    if (customer){
-      try{
-        const {data} = await api.get(`/customers/${customer.id}/`);
+  const openCustomerDetails = async (customer) => {
+    if (customer) {
+      try {
+        const { data } = await api.get(`/customers/${customer.id}/`);
         setCurrentCustomer(data);
         setIsDetailsOpen(true);
-      }catch(error){
+      } catch (error) {
         console.error("Error mostrando detalles del cliente", error);
         toast.error("No se pudo cargar la información del cliente.");
       }
@@ -113,7 +111,7 @@ export function CustomerManager() {
           Nuevo Cliente
         </Button>
       </div>
-      <CustomerTable
+      <CustomerList
         customers={customers}
         onViewCustomer={openCustomerDetails}
         onEditCustomer={openEditForm}
@@ -144,9 +142,9 @@ export function CustomerManager() {
         }
         itemType="cliente"
       />
-      <AuthRequiredModal 
-        isOpen={isAuthModalOpen} 
-        onClose={() => setIsAuthModalOpen(false)} 
+      <AuthRequiredModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
         returnPath={currentReturnPath}
       />
     </div>
