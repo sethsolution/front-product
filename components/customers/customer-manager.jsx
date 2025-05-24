@@ -5,12 +5,12 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { CustomerForm } from "./customer-form";
+import { CustomerList } from "./customers-list";
 import { CustomerDetails } from "./customer-dateils";
 import { DeleteConfirmation } from "../ui/delete-confirmation";
 import { AuthRequiredModal } from "../auth/auth-modal";
 import { api } from "@/lib/axios";
 import toast from "react-hot-toast";
-import { CustomerList } from "./customers-list";
 
 export function CustomerManager() {
   const [customers, setCustomers] = useState([]);
