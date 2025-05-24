@@ -28,20 +28,18 @@ export function Header() {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      
       const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
         setAuthState({ isAuthenticated: false, user: null });
         return;
       }
       try {
-  
         const { data } = await api.get("/auth/users/me/", {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-  
+
         setAuthState({
           isAuthenticated: true,
           user: {
@@ -50,7 +48,6 @@ export function Header() {
             last_name: data.last_name,
           },
         });
-
       } catch (error) {
         if (
           (error.response && error.response.status === 401) ||
@@ -59,8 +56,7 @@ export function Header() {
           localStorage.removeItem("accessToken");
           setAuthState({ isAuthenticated: false, user: null });
           toast.error("Sesión expirada. Por favor inicie sesión nuevamente.");
-          }
-        
+        }
       }
     };
 
@@ -80,12 +76,12 @@ export function Header() {
     return initials || "NA";
   };
   return (
-    <header className="border-b">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+    <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className=" flex h-16 items-center justify-between px-4 md:px-6">
         <div className="md:hidden"></div>
 
         <div className="flex items-center gap-2">
-          <Link href="/" className="text-xl font-bold md:text-left text-center">
+          <Link href="/" className="text-xl font-bold md:text-left">
             <span className="hidden md:inline">Sistema de Gestión</span>
             <span className="md:hidden">SG</span>
           </Link>
