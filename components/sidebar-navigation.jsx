@@ -17,7 +17,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
-  Home
+  Home,
 } from "lucide-react";
 import { handleLogoutSession } from "@/lib/logout";
 
@@ -72,7 +72,6 @@ const navSections = [
       },
     ],
   },
-  
 ];
 
 export function SidebarNavigation() {
@@ -126,7 +125,7 @@ export function SidebarNavigation() {
 
       <div
         className={cn(
-          "fixed top-16 bottom-0 left-0 z-40 border-r bg-background transition-all duration-300 ease-in-out",
+          "fixed top-16 bottom-0 left-0 z-40 border-r bg-background transition-all duration-300 ease-in-out flex flex-col",
           isSidebarOpen
             ? "translate-x-0"
             : "-translate-x-full md:translate-x-0",
@@ -154,7 +153,8 @@ export function SidebarNavigation() {
             )}
           </Button>
         </div>
-        <div className="flex flex-col justify-between h-[calc(100%-4rem)]">
+
+        <div className="flex-1 overflow-y-auto">
           <nav className="flex flex-col p-4 space-y-6">
             {navSections.map((section) => (
               <div key={section.title} className="space-y-2">
@@ -195,25 +195,25 @@ export function SidebarNavigation() {
               </div>
             ))}
           </nav>
-
-          {isAuthenticated && (
-            <div className="p-4 border-t">
-              <Button
-                variant="ghost"
-                className={cn(
-                  "w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10",
-                  isCollapsed ? "justify-center px-2" : ""
-                )}
-                onClick={handleLogout}
-              >
-                <LogOut
-                  className={cn("h-5 w-5", isCollapsed ? "mx-0" : "mr-3")}
-                />
-                {!isCollapsed && <span>Cerrar Sesión</span>}
-              </Button>
-            </div>
-          )}
         </div>
+
+        {isAuthenticated && (
+          <div className="flex-shrink-0 p-4 border-t bg-background">
+            <Button
+              variant="ghost"
+              className={cn(
+                "w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10",
+                isCollapsed ? "justify-center px-2" : ""
+              )}
+              onClick={handleLogout}
+            >
+              <LogOut
+                className={cn("h-5 w-5", isCollapsed ? "mx-0" : "mr-3")}
+              />
+              {!isCollapsed && <span>Cerrar Sesión</span>}
+            </Button>
+          </div>
+        )}
       </div>
 
       <div
