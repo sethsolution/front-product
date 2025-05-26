@@ -154,7 +154,7 @@ export function SidebarNavigation() {
           </Button>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto scrollbar-hide">
           <nav className="flex flex-col p-4 space-y-6">
             {navSections.map((section) => (
               <div key={section.title} className="space-y-2">
