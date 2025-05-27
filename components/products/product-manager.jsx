@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PlusCircle, Search } from "lucide-react";
-import { ProductTable } from "./product-table";
 import { ProductForm } from "./product-form";
 import { ProductDetails } from "./product-details";
 import { DeleteConfirmation } from "@/components/ui/delete-confirmation";
@@ -93,21 +92,13 @@ export function ProductManager() {
     if (!searchTerm.trim()) return true;
     
     const search = searchTerm.toLowerCase().trim();
-    
-    if (product.title && product.title.toLowerCase().includes(search)) return true;
-    
-    if (product.description && product.description.toLowerCase().includes(search)) return true;
-    
-    if (product.category && product.category.name && 
-        product.category.name.toLowerCase().includes(search)) return true;
-    
-    if (product.brand && product.brand.name && 
-        product.brand.name.toLowerCase().includes(search)) return true;
-    
-    if (!isNaN(search) && product.price && 
-        product.price.toString().includes(search)) return true;
-    
-    return false;
+    return (
+      product.title?.toLowerCase().includes(search) ||
+      product.description?.toLowerCase().includes(search) ||
+      (product.category?.name || "").toLowerCase().includes(search) ||
+      (product.brand?.name || "").toLowerCase().includes(search) ||
+      (product.price && product.price.toString().includes(search))
+    )
   });
 
   const handleCreateProduct = async (newProduct) => {
@@ -291,12 +282,6 @@ export function ProductManager() {
         </Button>
       </div>
 
-      {/* <ProductTable
-        products={filteredProducts}
-        onViewProduct={openProductDetails}
-        onEditProduct={openEditForm}
-        onDeleteProduct={openDeleteConfirmation}
-      /> */}
       <ProductList
         products={filteredProducts}
         onViewProduct={openProductDetails}

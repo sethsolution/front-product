@@ -19,40 +19,58 @@ import {
   LogOut,
   Home,
 } from "lucide-react";
-import { api } from "@/lib/axios";
-import toast from "react-hot-toast";
 import { handleLogoutSession } from "@/lib/logout";
 
-const navItems = [
+const navSections = [
   {
-    title: "Tareas",
-    href: "/tasks",
-    icon: CheckSquare,
+    title: "TAREAS",
+    items: [
+      {
+        title: "Tareas",
+        href: "/tasks",
+        icon: CheckSquare,
+      },
+    ],
   },
   {
-    title: "Productos",
-    href: "/products",
-    icon: Package,
+    title: "INVENTARIO",
+    items: [
+      {
+        title: "Productos",
+        href: "/products",
+        icon: Package,
+      },
+      {
+        title: "Categorías",
+        href: "/categories",
+        icon: Tag,
+      },
+      {
+        title: "Marcas",
+        href: "/brands",
+        icon: Briefcase,
+      },
+    ],
   },
   {
-    title: "Clientes",
-    href: "/customers",
-    icon: Users,
+    title: "CLIENTES",
+    items: [
+      {
+        title: "Clientes",
+        href: "/customers",
+        icon: Users,
+      },
+    ],
   },
   {
-    title: "Categorías",
-    href: "/categories",
-    icon: Tag,
-  },
-  {
-    title: "Marcas",
-    href: "/brands",
-    icon: Briefcase,
-  },
-  {
-    title: "Mi Perfil",
-    href: "/profile",
-    icon: User,
+    title: "PERFIL",
+    items: [
+      {
+        title: "Mi Perfil",
+        href: "/profile",
+        icon: User,
+      },
+    ],
   },
 ];
 
@@ -66,7 +84,7 @@ export function SidebarNavigation() {
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     setIsAuthenticated(!!accessToken);
-    
+
     const savedSidebarState = localStorage.getItem("sidebarCollapsed");
     if (savedSidebarState) {
       setIsCollapsed(savedSidebarState === "true");
@@ -78,7 +96,7 @@ export function SidebarNavigation() {
   }, [isCollapsed]);
 
   const handleLogout = async () => {
-    const accessToken = localStorage.getItem("accessToken"); 
+    const accessToken = localStorage.getItem("accessToken");
     await handleLogoutSession(accessToken, router);
     setIsAuthenticated(false);
   };
@@ -107,7 +125,7 @@ export function SidebarNavigation() {
 
       <div
         className={cn(
-          "fixed top-16 bottom-0 left-0 z-40 border-r bg-background transition-all duration-300 ease-in-out",
+          "fixed top-16 bottom-0 left-0 z-40 border-r bg-background transition-all duration-300 ease-in-out flex flex-col",
           isSidebarOpen
             ? "translate-x-0"
             : "-translate-x-full md:translate-x-0",
@@ -135,38 +153,52 @@ export function SidebarNavigation() {
             )}
           </Button>
         </div>
-        <div className="flex flex-col justify-between h-[calc(100%-4rem)]">
-          <nav className="flex flex-col gap-1 p-4">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  <Button
-                    variant={isActive ? "secondary" : "ghost"}
-                    className={cn(
-                      "w-full justify-start",
-                      isActive ? "bg-secondary" : "",
-                      isCollapsed ? "justify-center px-2" : ""
-                    )}
-                  >
-                    <item.icon
-                      className={cn("h-5 w-5", isCollapsed ? "mx-0" : "mr-2")}
-                    />
-                    {!isCollapsed && <span>{item.title}</span>}
-                  </Button>
-                </Link>
-              );
-            })}
-          </nav>
 
-          {
-            isAuthenticated && (
-              
-          <div className="p-4 border-t">
+        <div className="flex-1 overflow-y-auto scrollbar-hide">
+          <nav className="flex flex-col p-4 space-y-6">
+            {navSections.map((section) => (
+              <div key={section.title} className="space-y-2">
+                {!isCollapsed && (
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2 mb-3">
+                    {section.title}
+                  </h3>
+                )}
+                <div className="space-y-1">
+                  {section.items.map((item) => {
+                    const isActive = pathname === item.href;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setIsSidebarOpen(false)}
+                      >
+                        <Button
+                          variant={isActive ? "secondary" : "ghost"}
+                          className={cn(
+                            "w-full justify-start",
+                            isActive ? "bg-secondary" : "",
+                            isCollapsed ? "justify-center px-2" : ""
+                          )}
+                        >
+                          <item.icon
+                            className={cn(
+                              "h-5 w-5",
+                              isCollapsed ? "mx-0" : "mr-3"
+                            )}
+                          />
+                          {!isCollapsed && <span>{item.title}</span>}
+                        </Button>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </nav>
+        </div>
+
+        {isAuthenticated && (
+          <div className="flex-shrink-0 p-4 border-t bg-background">
             <Button
               variant="ghost"
               className={cn(
@@ -176,13 +208,12 @@ export function SidebarNavigation() {
               onClick={handleLogout}
             >
               <LogOut
-                className={cn("h-5 w-5", isCollapsed ? "mx-0" : "mr-2")}
+                className={cn("h-5 w-5", isCollapsed ? "mx-0" : "mr-3")}
               />
               {!isCollapsed && <span>Cerrar Sesión</span>}
             </Button>
           </div>
-            )}
-        </div>
+        )}
       </div>
 
       <div

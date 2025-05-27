@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
-import { CustomerTable } from "./customer-table";
+import { Input } from "@/components/ui/input";
+import { PlusCircle, Search } from "lucide-react";
 import { CustomerForm } from "./customer-form";
+import { CustomerList } from "./customers-list";
 import { CustomerDetails } from "./customer-dateils";
 import { DeleteConfirmation } from "../ui/delete-confirmation";
 import { AuthRequiredModal } from "../auth/auth-modal";
@@ -21,9 +22,21 @@ export function CustomerManager() {
   const [currentCustomer, setCurrentCustomer] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [currentReturnPath, setCurrentReturnPath] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const router = useRouter();
 
+  const filterCustomers = customers.filter((customer) => {
+    if (!searchTerm.trim()) return true;
+    const search = searchTerm.toLowerCase().trim();
+    const fullName = `${customer.name} ${customer.last_name}`.toLowerCase();
+    return (
+      customer.name.toLowerCase().includes(search) ||
+      customer.last_name.toLowerCase().includes(search) ||
+      customer.email.toLowerCase().includes(search) ||
+      fullName.includes(search)
+    );
+  });
   useEffect(() => {
     const fetchCustomers = async () => {
       const accessToken = localStorage.getItem("accessToken");
@@ -33,14 +46,14 @@ export function CustomerManager() {
         setCurrentReturnPath(currentPath);
         return;
       }
-      
-      try { 
-        const {data} = await api.get(`/customers/`,{
+
+      try {
+        const { data } = await api.get(`/customers/`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
-          }
-        })
-  
+          },
+        });
+
         setCustomers(data);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -50,8 +63,6 @@ export function CustomerManager() {
           toast.error("No se pudo cargar la información de clientes");
         }
       }
-      
-        
     };
 
     fetchCustomers();
@@ -59,28 +70,28 @@ export function CustomerManager() {
 
   const handleDeleteCustomer = async () => {
     if (currentCustomer) {
-      try{
+      try {
         await api.delete(`/customers/${currentCustomer.id}/`);
         toast.success("Clietne eliminado con éxito");
-        setCustomers((prev)=>
+        setCustomers((prev) =>
           prev.filter((customer) => customer.id !== currentCustomer.id)
         );
         setIsDeleteOpen(false);
         setCurrentCustomer(null);
-      }catch(error){
+      } catch (error) {
         console.error("Error eliminando el cliente:", error);
         toast.error("Error elimando el cliente");
       }
-      }
+    }
   };
 
-  const openCustomerDetails = async(customer) => {
-    if (customer){
-      try{
-        const {data} = await api.get(`/customers/${customer.id}/`);
+  const openCustomerDetails = async (customer) => {
+    if (customer) {
+      try {
+        const { data } = await api.get(`/customers/${customer.id}/`);
         setCurrentCustomer(data);
         setIsDetailsOpen(true);
-      }catch(error){
+      } catch (error) {
         console.error("Error mostrando detalles del cliente", error);
         toast.error("No se pudo cargar la información del cliente.");
       }
@@ -101,7 +112,15 @@ export function CustomerManager() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Clientes</h1>
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar clientes..."
+            className="pl-8"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
         <Button
           onClick={() => {
             setIsEditing(false);
@@ -113,8 +132,8 @@ export function CustomerManager() {
           Nuevo Cliente
         </Button>
       </div>
-      <CustomerTable
-        customers={customers}
+      <CustomerList
+        customers={filterCustomers}
         onViewCustomer={openCustomerDetails}
         onEditCustomer={openEditForm}
         onDeleteCustomer={openDeleteConfirmation}
@@ -144,9 +163,9 @@ export function CustomerManager() {
         }
         itemType="cliente"
       />
-      <AuthRequiredModal 
-        isOpen={isAuthModalOpen} 
-        onClose={() => setIsAuthModalOpen(false)} 
+      <AuthRequiredModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
         returnPath={currentReturnPath}
       />
     </div>
