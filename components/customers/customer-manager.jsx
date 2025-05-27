@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { PlusCircle, Search } from "lucide-react";
 import { CustomerForm } from "./customer-form";
 import { CustomerList } from "./customers-list";
 import { CustomerDetails } from "./customer-dateils";
@@ -21,9 +22,21 @@ export function CustomerManager() {
   const [currentCustomer, setCurrentCustomer] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [currentReturnPath, setCurrentReturnPath] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const router = useRouter();
 
+  const filterCustomers = customers.filter((customer) => {
+    if (!searchTerm.trim()) return true;
+    const search = searchTerm.toLowerCase().trim();
+    const fullName = `${customer.name} ${customer.last_name}`.toLowerCase();
+    return (
+      customer.name.toLowerCase().includes(search) ||
+      customer.last_name.toLowerCase().includes(search) ||
+      customer.email.toLowerCase().includes(search) ||
+      fullName.includes(search)
+    );
+  });
   useEffect(() => {
     const fetchCustomers = async () => {
       const accessToken = localStorage.getItem("accessToken");
@@ -99,7 +112,15 @@ export function CustomerManager() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Clientes</h1>
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar clientes..."
+            className="pl-8"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
         <Button
           onClick={() => {
             setIsEditing(false);
@@ -112,7 +133,7 @@ export function CustomerManager() {
         </Button>
       </div>
       <CustomerList
-        customers={customers}
+        customers={filterCustomers}
         onViewCustomer={openCustomerDetails}
         onEditCustomer={openEditForm}
         onDeleteCustomer={openDeleteConfirmation}
